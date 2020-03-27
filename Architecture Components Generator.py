@@ -25,11 +25,48 @@ cmds.setParent( '..' )
 cmds.setParent( '..' )
 cmds.setParent( '..' )
 
-# show UI window
+# Show UI window
 cmds.showWindow( myWin )
 
 #################################################################
 #                   STRAIGHT STAIRS FUNCTION                    #  
 #################################################################
 def straightStairs():
+    # query values from UI sliders
     
+    # define stairs size
+    stairSizeX = 8.0
+    stairSizeY = 1.0
+    stairSizeZ = 2.0
+    
+    # name
+    nsTmp = "StraightStairs" + str(rnd.randint(1000,9999))
+    
+    cmds.select(clear=True)
+    cmds.namespace(add=nsTmp)
+    cmds.namespace(set=nsTmp)
+    
+    # quantity of stairs
+    for i in range (8):
+        # create a stair
+        cmds.polyCube(d = stairSizeZ, h = stairSizeY, w = stairSizeX)
+        # move it on Z axis
+        cmds.move(-i*stairSizeZ, moveZ=True)
+        # move it on Y axis
+        cmds.move(i*stairSizeY, moveY=True)
+    
+    # unite stairs
+    cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False) 
+    # move them up
+    cmds.move(stairSizeY/2.0, moveY=True)    
+       
+        
+    # create Left side poles
+    for i in range (8):
+        cmds.polyCylinder (r = .05, h = 6)
+        # move it up
+        cmds.move(3 + i*stairSizeY, moveY=True)
+        # move it to the left
+        cmds.move(-stairSizeX/2.0 + 0.4, moveX=True)
+        # move it into depth
+        cmds.move(-i *stairSizeZ, moveZ=True)
