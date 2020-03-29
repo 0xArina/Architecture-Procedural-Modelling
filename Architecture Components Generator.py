@@ -25,6 +25,88 @@ cmds.setParent( '..' )
 cmds.setParent( '..' )
 cmds.setParent( '..' )
 
+#              UI: adjust and create Spiral Stairs              #
+#################################################################
+cmds.frameLayout(collapsable=True, label="Spiral Stairs", width=475, height=140)
+
+cmds.columnLayout()
+cmds.button(label="Create Spiral Stairs", command=('spiralStairs()'))
+
+# Level Up in Hierarchy
+cmds.setParent( '..' )
+cmds.setParent( '..' )
+cmds.setParent( '..' )
+
+#            UI: adjust and create L-shaped Stairs              #
+#################################################################
+cmds.frameLayout(collapsable=True, label="Straight Stairs", width=475, height=140)
+
+cmds.columnLayout()
+cmds.button(label="Create Straight Stairs", command=('Lstairs()'))
+
+# Level Up in Hierarchy
+cmds.setParent( '..' )
+cmds.setParent( '..' )
+cmds.setParent( '..' )
+
+#            UI: adjust and create U-shaped Stairs              #
+#################################################################
+cmds.frameLayout(collapsable=True, label="Straight Stairs", width=475, height=140)
+
+cmds.columnLayout()
+cmds.button(label="Create Straight Stairs", command=('Ustairs()'))
+
+# Level Up in Hierarchy
+cmds.setParent( '..' )
+cmds.setParent( '..' )
+cmds.setParent( '..' )
+
+#         UI: adjust and create Roman Tuscan column             #
+#################################################################
+cmds.frameLayout(collapsable=True, label="Straight Stairs", width=475, height=140)
+
+cmds.columnLayout()
+cmds.button(label="Create Straight Stairs", command=('RTcolumn()'))
+
+# Level Up in Hierarchy
+cmds.setParent( '..' )
+cmds.setParent( '..' )
+cmds.setParent( '..' )
+
+#          UI: adjust and create Greek Doric column             #
+#################################################################
+cmds.frameLayout(collapsable=True, label="Straight Stairs", width=475, height=140)
+
+cmds.columnLayout()
+cmds.button(label="Create Straight Stairs", command=('GDcolumn()'))
+
+# Level Up in Hierarchy
+cmds.setParent( '..' )
+cmds.setParent( '..' )
+cmds.setParent( '..' )
+
+#          UI: adjust and create Greek Ionic column             #
+#################################################################
+cmds.frameLayout(collapsable=True, label="Straight Stairs", width=475, height=140)
+
+cmds.columnLayout()
+cmds.button(label="Create Straight Stairs", command=('GIcolumn()'))
+
+# Level Up in Hierarchy
+cmds.setParent( '..' )
+cmds.setParent( '..' )
+cmds.setParent( '..' )
+
+#     UI: adjust and create walls with window/door frames       #
+#################################################################
+cmds.frameLayout(collapsable=True, label="Straight Stairs", width=475, height=140)
+
+cmds.columnLayout()
+cmds.button(label="Create Straight Stairs", command=('straightStairs()'))
+
+# Level Up in Hierarchy
+
+
 # Show UI window
 cmds.showWindow( myWin )
 
@@ -46,7 +128,7 @@ def straightStairs():
     cmds.namespace(add=nsTmp)
     cmds.namespace(set=nsTmp)
     
-    # quantity of stairs
+    # staircase
     for i in range (8):
         # create a stair
         cmds.polyCube(d = stairSizeZ, h = stairSizeY, w = stairSizeX)
@@ -61,8 +143,9 @@ def straightStairs():
     cmds.move(stairSizeY/2.0, moveY=True)    
        
         
-    # create Left side poles
+    # handrail poles
     for i in range (8):
+        # create Left side poles
         cmds.polyCylinder (r = .05, h = 6)
         # move it up
         cmds.move(3 + i*stairSizeY, moveY=True)
@@ -70,3 +153,46 @@ def straightStairs():
         cmds.move(-stairSizeX/2.0 + 0.4, moveX=True)
         # move it into depth
         cmds.move(-i *stairSizeZ, moveZ=True)
+        
+    # handrail upper part
+    # length^2 = a^2 + b^2
+    
+    cmds.polyCube( sx=1, sy=1, sz=1, h=.2, w=.5, d=17)
+    
+    cmds.rotate(27, 0, 0)
+    
+#################################################################
+#                     SPIRAL STAIRS FUNCTION                    #  
+#################################################################
+def spiralStairs():
+    
+    # base
+    cmds.polyCylinder(r =2, h= 20)
+    for i in range(7):
+        # steps
+        cmds.polyCube(w = 5, d = 2, h = 0.5)
+        cmds.move(3 * i, moveY=True)
+
+#################################################################
+#                   STRAIGHT STAIRS FUNCTION                    #  
+#################################################################
+
+#################################################################
+#                   STRAIGHT STAIRS FUNCTION                    #  
+#################################################################
+
+#################################################################
+#                   STRAIGHT STAIRS FUNCTION                    #  
+#################################################################
+
+#################################################################
+#                   STRAIGHT STAIRS FUNCTION                    #  
+#################################################################
+
+#################################################################
+#                   STRAIGHT STAIRS FUNCTION                    #  
+#################################################################
+
+#################################################################
+#                   STRAIGHT STAIRS FUNCTION                    #  
+#################################################################
