@@ -30,7 +30,7 @@ cmds.setParent( '..' )
 cmds.frameLayout(collapsable=True, label="Spiral Stairs")
 
 cmds.columnLayout()
-cmds.radioButtonGrp('roundedBlockWithHolesBendAngle', label="Staircase Height", labelArray2=["90 deg", "60 deg"], numberOfRadioButtons=2, sl=1,cc2=checkBend60deg)
+cmds.radioButtonGrp('spiralStairsHeight', label="Staircase Height", labelArray3=["2.4 m", "2.8 m", "3.2 m"], numberOfRadioButtons=3, sl=1)
 
 cmds.columnLayout()
 cmds.button(label="Create Spiral Stairs", command=('spiralStairs()'))
@@ -168,17 +168,23 @@ def straightStairs():
 #                     SPIRAL STAIRS FUNCTION                    #  
 #################################################################
 def spiralStairs():
-    # query values from UI sliders
-    
+    # query user input values
+    stairsHeight = cmds.radioButtonGrp('spiralStairsHeight', q=True, sl=True)
      
-    # define needed variables
+    # define needed variables   "2.4 m", "2.8 m", "3.2 m"
+    if(stairsHeight == 1):
+        cylindHeight = 20
+    if(stairsHeight == 2):
+        cylindHeight = 28
+    if(stairsHeight == 3):
+        cylindHeight = 32
     # staircaseHeight 
     # staircaseDiameter 
    # lengthBtwSteps
    # stepThickness
     
     # base
-    cmds.polyCylinder(r =2, h= 20)
+    cmds.polyCylinder(r = 2, h = cylindHeight)
     # move it up
     cmds.move(10, moveY=True)
     # step count 
@@ -224,6 +230,6 @@ def spiralStairs():
 #################################################################
 def walls():
     # base
-    cmds.polyCube(w = 40, d = 2, h = 20)
+    cmds.polyCube(w = 40, d = 1.5, h = 20)
     # move it up
     cmds.move(10, moveY=True)
