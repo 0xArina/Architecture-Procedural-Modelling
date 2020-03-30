@@ -119,7 +119,7 @@ cmds.showWindow( myWin )
 #                   STRAIGHT STAIRS FUNCTION                    #  
 #################################################################
 def straightStairs():
-    # query values from UI sliders
+    # query user input values
     
     # define stairs size
     stairSizeX = 8.0
@@ -148,7 +148,7 @@ def straightStairs():
     cmds.move(stairSizeY/2.0, moveY=True)    
        
         
-    # handrail poles
+    # handrail poles Left
     for i in range (8):
         # create Left side poles
         cmds.polyCylinder (r = 0.05, h = 6)
@@ -159,12 +159,34 @@ def straightStairs():
         # move it into depth
         cmds.move(-i *stairSizeZ, moveZ=True)
         
-    # handrail upper part
+    # handrail poles Right
+    for i in range (8):
+        # create Left side poles
+        cmds.polyCylinder (r = 0.05, h = 6)
+        # move it up
+        cmds.move(3 + i*stairSizeY, moveY=True)
+        # move it to the Right
+        cmds.move(stairSizeX/2.0 - 0.4, moveX=True)
+        # move it into depth
+        cmds.move(-i *stairSizeZ, moveZ=True)
+    
+        
+    # handrail upper part 
     # length^2 = a^2 + b^2
     
+    #LEFT
     cmds.polyCube( sx=1, sy=1, sz=1, h=.2, w=.5, d=17)
     
     cmds.rotate(27, 0, 0)
+    
+    cmds.move(-3.557, 9.576, -6.858)
+    
+    # RIGHT
+    cmds.polyCube( sx=1, sy=1, sz=1, h=.2, w=.5, d=17)
+    
+    cmds.rotate(27, 0, 0)
+    
+    cmds.move(3.557, 9.576, -6.858)
     
 #################################################################
 #                     SPIRAL STAIRS FUNCTION                    #  
@@ -244,6 +266,14 @@ def spiralStairs():
 #################################################################
 def walls():
     # base
-    cmds.polyCube(w = 40, d = 1.5, h = 20)
+    wall = cmds.polyCube(w = 40, d = 1.5, h = 20)
     # move it up
     cmds.move(10, moveY=True)
+   
+    # door frame
+    door = cmds.polyCube(w = 10, d = 1.5, h = 15)
+    # move it up
+    cmds.move(7.5, moveY=True)
+    
+    # remove door frame from the wall
+    wall = cmds.polyCBoolOp(wall, door, op=2)
