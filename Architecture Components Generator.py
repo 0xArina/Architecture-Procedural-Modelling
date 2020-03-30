@@ -30,7 +30,9 @@ cmds.setParent( '..' )
 cmds.frameLayout(collapsable=True, label="Spiral Stairs")
 
 cmds.columnLayout()
-cmds.radioButtonGrp('spiralStairsHeight', label="Staircase Height", labelArray3=["2.4 m", "2.8 m", "3.2 m"], numberOfRadioButtons=3, sl=1)
+cmds.radioButtonGrp('spiralStairsHeight', label="Staircase Height", labelArray3=["2.4 m", "2.8 m", "3.2 m"], numberOfRadioButtons=3, sl=2)
+cmds.radioButtonGrp('spiralStaircaseDiameter', label="Staircase Diameter", labelArray3=["140 m", "160 m", "180 m"], numberOfRadioButtons=3, sl=1)
+cmds.intSliderGrp('stepHeight', l="Step Thickness", f=True, min=1, max=6, value=3)
 
 cmds.columnLayout()
 cmds.button(label="Create Spiral Stairs", command=('spiralStairs()'))
@@ -169,28 +171,40 @@ def straightStairs():
 #################################################################
 def spiralStairs():
     # query user input values
-    stairsHeight = cmds.radioButtonGrp('spiralStairsHeight', q=True, sl=True)
+    staircaseHeight = cmds.radioButtonGrp('spiralStairsHeight', q=True, sl=True)
+    staircaseDiameter = cmds.radioButtonGrp('spiralStaircaseDiameter', q=True, sl=True)
+    stepThickness = cmds.intSliderGrp('stepHeight', q=True, v=True)
      
-    # define needed variables   "2.4 m", "2.8 m", "3.2 m"
-    if(stairsHeight == 1):
-        cylindHeight = 20
-    if(stairsHeight == 2):
-        cylindHeight = 28
-    if(stairsHeight == 3):
-        cylindHeight = 32
-    # staircaseHeight 
-    # staircaseDiameter 
-   # lengthBtwSteps
-   # stepThickness
+    # define variables   
+    stepHeight = stepThickness * 0.3
+    
+    if(staircaseHeight == 1):
+        cylindHeight = 16 # 2.4 m 
+        stepCount = 8
+    if(staircaseHeight == 2):
+        cylindHeight = 20 # 2.8 m
+        stepCount = 10
+    if(staircaseHeight == 3):
+        cylindHeight = 24 # 3.2 m
+        stepCount = 12
+    
+    if(staircaseDiameter == 1):
+        stairWidth = 5    # 140 m
+    if(staircaseDiameter == 2):
+        stairWidth = 7.2    # 160 m
+    if(staircaseDiameter == 3):
+        stairWidth = 9.4    # 180m
     
     # base
     cmds.polyCylinder(r = 2, h = cylindHeight)
     # move it up
-    cmds.move(10, moveY=True)
+    cmds.move(cylindHeight/2, moveY=True)
     # step count 
-    for i in range(10):
+    for i in range(stepCount):
         # stair
-        cmds.polyCube(w = 5, d = 2, h = 0.5)
+        cmds.polyCube(w = stairWidth, d = 2, h = stepHeight)
+        # move it half size up from center
+        cmds.move(stepHeight/2, moveY=True)
         # move it on X axis 
         cmds.move(3, moveX=True)
         # move it on Y axis 
