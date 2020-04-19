@@ -18,9 +18,9 @@ cmds.menuItem(label="Delete Selected", command=('cmds.delete()'))
 cmds.frameLayout(collapsable=True, label="Straight Stairs", width=475)
 
 cmds.columnLayout()
-cmds.radioButtonGrp('straightStairsHeight', label="Staircase Height", labelArray3=["2.4 m", "2.8 m", "3.2 m"], numberOfRadioButtons=3, sl=2)
+cmds.radioButtonGrp('straightStairsHeight', label="Staircase Height", labelArray3=["2 m", "2.4 m", "2.8 m"], numberOfRadioButtons=3, sl=2)
 cmds.intSliderGrp('straightStairsWidth', l="Staircase Width", f=True, min=1, max=6, value=3)
-cmds.radioButtonGrp('straightStairsHR', label="Handrails", labelArray2=["yes", "no"], numberOfRadioButtons=2, sl=1)
+cmds.radioButtonGrp('straightStairsHR', label="Add Handrails?", labelArray2=["yes", "no"], numberOfRadioButtons=2, sl=1)
 
 cmds.columnLayout()
 cmds.button(label="Create Straight Stairs", command=('straightStairs()'))
@@ -35,11 +35,10 @@ cmds.setParent( '..' )
 cmds.frameLayout(collapsable=True, label="Spiral Stairs")
 
 cmds.columnLayout()
-cmds.radioButtonGrp('spiralStairsHeight', label="Staircase Height", labelArray3=["2.4 m", "2.8 m", "3.2 m"], numberOfRadioButtons=3, sl=2)
+cmds.radioButtonGrp('spiralStairsHeight', label="Staircase Height", labelArray3=["2 m", "2.4 m", "2.8 m"], numberOfRadioButtons=3, sl=2)
 cmds.radioButtonGrp('spiralStaircaseDiameter', label="Staircase Diameter", labelArray3=["140 m", "160 m", "180 m"], numberOfRadioButtons=3, sl=1)
 cmds.intSliderGrp('stepHeight', l="Step Thickness", f=True, min=1, max=6, value=3)
-cmds.colorSliderGrp('baseColour', label="Colour", hsv=(120, 1, 1))
-cmds.colorSliderGrp('stairsColour', label="Colour", hsv=(120, 1, 1))
+cmds.colorSliderGrp('spiralColour', label="Colour", hsv=(120, 1, 1))
 
 cmds.columnLayout()
 cmds.button(label="Create Spiral Stairs", command=('spiralStairs()'))
@@ -114,10 +113,11 @@ cmds.setParent( '..' )
 cmds.frameLayout(collapsable=True, label="Walls with window/door frames")
 
 cmds.columnLayout()
-cmds.radioButtonGrp('wallHeight', label="Wall Height", labelArray3=["2.4 m", "2.8 m", "3.2 m"], numberOfRadioButtons=3, sl=2)
-cmds.radioButtonGrp('windowHeight', label="Wall Height", labelArray3=["1 m", "1.5 m", "2 m"], numberOfRadioButtons=3, sl=2)
-cmds.radioButtonGrp('addDoor', label="Door", labelArray2=["yes", "no"], numberOfRadioButtons=2, sl=1)
-cmds.intSliderGrp('windows', l="Number of Windows", f=True, min=1, max=3, value=3)
+cmds.radioButtonGrp('wallHeight', label="Wall Height", labelArray3=["2 m", "2.4 m", "2.8 m"], numberOfRadioButtons=3, sl=2)
+cmds.radioButtonGrp('windowHeight', label="Window Height", labelArray3=["0.5 m", "1 m", "1.5 m"], numberOfRadioButtons=3, sl=2)
+cmds.intSliderGrp('windows', l="Number of Window frames", f=True, min=0, max=2, value=2)
+cmds.radioButtonGrp('addDoor', label="Add a Door frame?", labelArray2=["yes", "no"], numberOfRadioButtons=2, sl=1)
+cmds.colorSliderGrp('wallColour', label="Colour", hsv=(63, 0.5, 1))
 
 cmds.columnLayout()
 cmds.button(label="Create Walls with window/door frames", command=('walls()'))
@@ -150,7 +150,7 @@ def straightStairs():
     cmds.namespace(set=nsTmp)
     
     # step count
-    for i in range (16):
+    for i in range (24):
         # create a stair
         cmds.polyCube(d = stairSizeZ, h = stairSizeY, w = stairSizeX)
         # move it on Z axis
@@ -215,20 +215,19 @@ def spiralStairs():
     staircaseHeight = cmds.radioButtonGrp('spiralStairsHeight', q=True, sl=True)
     staircaseDiameter = cmds.radioButtonGrp('spiralStaircaseDiameter', q=True, sl=True)
     stepThickness = cmds.intSliderGrp('stepHeight', q=True, v=True)
-    rgbB = cmds.colorSliderGrp('baseColour', q=True, rgbValue=True)
-    rgbS = cmds.colorSliderGrp('stairsColour', q=True, rgbValue=True) 
+    rgb = cmds.colorSliderGrp('spiralColour', q=True, rgbValue=True)
      
     # define variables   
     stepHeight = stepThickness * 0.3
     
     if(staircaseHeight == 1):
-        cylindHeight = 16 # 2.4 m 
+        cylindHeight = 16 # 2 m 
         stepCount = 8
     if(staircaseHeight == 2):
-        cylindHeight = 20 # 2.8 m
+        cylindHeight = 20 # 2.4 m
         stepCount = 10
     if(staircaseHeight == 3):
-        cylindHeight = 24 # 3.2 m
+        cylindHeight = 24 # 2.8 m
         stepCount = 12
     
     if(staircaseDiameter == 1):
@@ -289,15 +288,97 @@ def spiralStairs():
 #                     WALLS/WINDOWS FUNCTION                    #  
 #################################################################
 def walls():
-    # base
-    wall = cmds.polyCube(w = 40, d = 1.5, h = 20)
-    # move it up
-    cmds.move(10, moveY=True)
-   
-    # door frame
-    door = cmds.polyCube(w = 10, d = 1.5, h = 15)
-    # move it up
-    cmds.move(7.5, moveY=True)
+    # query user input values
+    wallHeight = cmds.radioButtonGrp('wallHeight', q=True, sl=True)
+    windowHeight = cmds.radioButtonGrp('windowHeight', q=True, sl=True)
+    doorFrame = cmds.radioButtonGrp('addDoor', q=True, sl=True)
+    windowFrame = cmds.intSliderGrp('windows', q=True, v=True)
+    rgb = cmds.colorSliderGrp('wallColour', q=True, rgbValue=True)
     
-    # remove door frame from the wall
-    wall = cmds.polyCBoolOp(wall, door, op=2)
+    # name
+    nsTmp = "Wall" + str(rnd.randint(1000,9999))
+    
+    cmds.select(clear=True)
+    cmds.namespace(add=nsTmp)
+    cmds.namespace(set=nsTmp)
+    
+    # define variables
+    if(wallHeight  == 1):
+        wallSizeY = 16
+        doorSizeY = 11
+        moveY = 8
+        moveDoorY = 5.5
+        move2obj = 12
+    if(wallHeight  == 2):
+        wallSizeY = 20
+        doorSizeY = 15
+        moveY = 10
+        moveDoorY = 7.5
+        move2obj = 16
+    if(wallHeight  == 3):
+        wallSizeY = 24
+        doorSizeY = 19
+        moveY = 12
+        moveDoorY = 9.5
+        move2obj = 20
+    
+    if(windowHeight == 1):
+        windowSizeY = 3
+        moveWindowY = windowSizeY/2 + wallSizeY/2 + 3
+    if(windowHeight == 2):
+        windowSizeY = 8
+        moveWindowY = windowSizeY/2 + wallSizeY/2 - 3
+    if(windowHeight == 3):
+        windowSizeY = 12
+        moveWindowY = windowSizeY/2 + wallSizeY/2  - 6
+    
+    # base
+    wall = cmds.polyCube(w = 40, d = 1.5, h = wallSizeY)
+    # move it up
+    cmds.move(moveY, moveY=True)
+   
+    # add door frame
+    if(doorFrame == 1):
+        door = cmds.polyCube(w = 10, d = 1.5, h = doorSizeY)
+        # move it up
+        cmds.move(moveDoorY, moveY=True)
+        # remove door frame from the wall
+        wall = cmds.polyCBoolOp(wall, door, op=2)
+    
+    # add window frames 
+    if(windowFrame == 1):
+        window1 = cmds.polyCube(w = 7, d = 1.5, h = windowSizeY)
+        # move it up
+        cmds.move(moveWindowY , moveY=True)
+        # move it left
+        cmds.move(-12, moveX=True)
+        # remove door frame from the wall
+        wall = cmds.polyCBoolOp(wall, window1, op=2)
+    if(windowFrame == 2):
+        window1 = cmds.polyCube(w = 7, d = 1.5, h = windowSizeY)
+        # move it up
+        cmds.move(moveWindowY , moveY=True)
+        # move it left
+        cmds.move(-12, moveX=True)
+        # remove door frame from the wall
+        wall = cmds.polyCBoolOp(wall, window1, op=2)
+        
+        window2 = cmds.polyCube(w = 7, d = 1.5, h = windowSizeY)
+        # move it up
+        cmds.move(moveWindowY , moveY=True)
+        # move it right
+        cmds.move(12, moveX=True)
+        # remove door frame from the wall
+        wall = cmds.polyCBoolOp(wall, window2, op=2)
+        
+    # add material        
+    myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
+    cmds.setAttr(nsTmp+":blckMat.color",rgb[0],rgb[1],rgb[2], type='double3')
+    
+    add2Obj = cmds.polyCube(w = 1, d = 1.5, h = 1)
+    cmds.move(move2obj, moveY=True)
+    cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False)
+    cmds.delete(ch=True)
+    
+    cmds.hyperShade(assign=(nsTmp+":blckMat"))  
+    cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True)
