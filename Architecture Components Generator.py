@@ -19,8 +19,8 @@ cmds.frameLayout(collapsable=True, label="Straight Stairs", width=475)
 
 cmds.columnLayout()
 cmds.radioButtonGrp('straightStairsHeight', label="Staircase Height", labelArray3=["2 m", "2.4 m", "2.8 m"], numberOfRadioButtons=3, sl=2)
-cmds.intSliderGrp('straightStairsWidth', l="Staircase Width", f=True, min=1, max=6, value=3)
 cmds.radioButtonGrp('straightStairsHR', label="Add Handrails?", labelArray2=["yes", "no"], numberOfRadioButtons=2, sl=1)
+cmds.colorSliderGrp('straightColour', label="Colour", hsv=(30, 0.397, 0.019))
 
 cmds.columnLayout()
 cmds.button(label="Create Straight Stairs", command=('straightStairs()'))
@@ -38,7 +38,7 @@ cmds.columnLayout()
 cmds.radioButtonGrp('spiralStairsHeight', label="Staircase Height", labelArray3=["2 m", "2.4 m", "2.8 m"], numberOfRadioButtons=3, sl=2)
 cmds.radioButtonGrp('spiralStaircaseDiameter', label="Staircase Diameter", labelArray3=["140 m", "160 m", "180 m"], numberOfRadioButtons=3, sl=1)
 cmds.intSliderGrp('stepHeight', l="Step Thickness", f=True, min=1, max=6, value=3)
-cmds.colorSliderGrp('spiralColour', label="Colour", hsv=(120, 1, 1))
+cmds.colorSliderGrp('spiralColour', label="Colour", hsv=(120, 0, 0.850))
 
 cmds.columnLayout()
 cmds.button(label="Create Spiral Stairs", command=('spiralStairs()'))
@@ -53,6 +53,10 @@ cmds.setParent( '..' )
 cmds.frameLayout(collapsable=True, label="L-shaped Stairs")
 
 cmds.columnLayout()
+cmds.radioButtonGrp('LstairsHeight', label="Staircase Height", labelArray3=["2 m", "2.4 m", "2.8 m"], numberOfRadioButtons=3, sl=2)
+cmds.colorSliderGrp('Lcolour', label="Colour", hsv=(120, 0, 0.310))
+
+cmds.columnLayout()
 cmds.button(label="Create L-shaped Stairs", command=('Lstairs()'))
 
 # Level Up in Hierarchy
@@ -63,6 +67,10 @@ cmds.setParent( '..' )
 #            UI: adjust and create U-shaped Stairs              #
 #################################################################
 cmds.frameLayout(collapsable=True, label="U-shaped Stairs")
+
+cmds.columnLayout()
+cmds.radioButtonGrp('UstairsHeight', label="Staircase Height", labelArray3=["2 m", "2.4 m", "2.8 m"], numberOfRadioButtons=3, sl=2)
+cmds.colorSliderGrp('Ucolour', label="Colour", hsv=(120, 0, 0.310))
 
 cmds.columnLayout()
 cmds.button(label="Create U-shaped Stairs", command=('Ustairs()'))
@@ -122,9 +130,6 @@ cmds.colorSliderGrp('wallColour', label="Colour", hsv=(63, 0.5, 1))
 cmds.columnLayout()
 cmds.button(label="Create Walls with window/door frames", command=('walls()'))
 
-# Level Up in Hierarchy
-
-
 # Show UI window
 cmds.showWindow( myWin )
 
@@ -134,13 +139,32 @@ cmds.showWindow( myWin )
 def straightStairs():
     # query user input values
     staircaseHeight = cmds.radioButtonGrp('straightStairsHeight', q=True, sl=True)
-    staircaseWidth = cmds.intSliderGrp('straightStairsWidth', q=True, v=True)
     createHandrails = cmds.radioButtonGrp('straightStairsHR', q=True, sl=True)
+    rgb = cmds.colorSliderGrp('straightColour', q=True, rgbValue=True)
     
     # define stairs size
     stairSizeX = 8.0
     stairSizeY = 1.0
     stairSizeZ = 2.0
+    
+    if(staircaseHeight == 1):
+        stepCount = 16
+        handrailsMoveX = 3.622
+        handrailsMoveY = 13.713
+        handrailsMoveZ = 15.467
+        handrailsLength = 35
+    if(staircaseHeight == 2):
+        stepCount = 20
+        handrailsMoveX = 3.722
+        handrailsMoveY = 15.171
+        handrailsMoveZ = 18.246
+        handrailsLength = 45
+    if(staircaseHeight == 3):
+        stepCount = 24
+        handrailsMoveX = 3.727
+        handrailsMoveY = 17.509
+        handrailsMoveZ = 23.036
+        handrailsLength = 52
     
     # name
     nsTmp = "StraightStairs" + str(rnd.randint(1000,9999))
@@ -150,24 +174,19 @@ def straightStairs():
     cmds.namespace(set=nsTmp)
     
     # step count
-    for i in range (24):
+    for i in range (stepCount):
         # create a stair
         cmds.polyCube(d = stairSizeZ, h = stairSizeY, w = stairSizeX)
         # move it on Z axis
         cmds.move(-i*stairSizeZ, moveZ=True)
         # move it on Y axis
-        cmds.move(i*stairSizeY, moveY=True)
-    
-    # unite stairs
-    cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False) 
-    # move them up
-    cmds.move(stairSizeY/2.0, moveY=True)    
+        cmds.move(i*stairSizeY, moveY=True) 
        
     # create handrails
     if(createHandrails == 1): 
    
         # handrail poles Left
-        for i in range (8):
+        for i in range (stepCount):
             # create Left side poles
             cmds.polyCylinder (r = 0.05, h = 6)
             # move it up
@@ -178,7 +197,7 @@ def straightStairs():
             cmds.move(-i *stairSizeZ, moveZ=True)
             
         # handrail poles Right
-        for i in range (8):
+        for i in range (stepCount):
             # create Left side poles
             cmds.polyCylinder (r = 0.05, h = 6)
             # move it up
@@ -187,25 +206,34 @@ def straightStairs():
             cmds.move(stairSizeX/2.0 - 0.4, moveX=True)
             # move it into depth
             cmds.move(-i *stairSizeZ, moveZ=True)
+ 
         
+        if(createHandrails == 1):
+            #LEFT
+            cmds.polyCube( sx=1, sy=1, sz=1, h=.2, w=.5, d=handrailsLength)
             
-        # handrail upper part 
-        # length^2 = a^2 + b^2
-        
-        
-        #LEFT
-        cmds.polyCube( sx=1, sy=1, sz=1, h=.2, w=.5, d=17)
-        
-        cmds.rotate(27, 0, 0)
-        
-        cmds.move(-3.557, 9.576, -6.858)
-        
-        # RIGHT
-        cmds.polyCube( sx=1, sy=1, sz=1, h=.2, w=.5, d=17)
-        
-        cmds.rotate(27, 0, 0)
-        
-        cmds.move(3.557, 9.576, -6.858)
+            cmds.rotate(26.557, 0, 0)
+            
+            cmds.move(-handrailsMoveX, handrailsMoveY, -handrailsMoveZ)
+            
+            # RIGHT
+            cmds.polyCube( sx=1, sy=1, sz=1, h=.2, w=.5, d=handrailsLength)
+            
+            cmds.rotate(26.557, 0, 0)
+            
+            cmds.move(handrailsMoveX, handrailsMoveY, -handrailsMoveZ)
+    
+    # add material        
+    myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
+    cmds.setAttr(nsTmp+":blckMat.color",rgb[0],rgb[1],rgb[2], type='double3')
+    
+    cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False)
+    #move stairs up
+    cmds.move(stairSizeY/2.0, moveY=True)  
+    cmds.delete(ch=True)
+    
+    cmds.hyperShade(assign=(nsTmp+":blckMat"))  
+    cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True)
     
 #################################################################
 #                     SPIRAL STAIRS FUNCTION                    #  
@@ -236,15 +264,19 @@ def spiralStairs():
         stairWidth = 7.2    # 160 m
     if(staircaseDiameter == 3):
         stairWidth = 9.4    # 180m
+        
+    # name
+    nsTmp = "SpiralStairs" + str(rnd.randint(1000,9999))
+    
+    cmds.select(clear=True)
+    cmds.namespace(add=nsTmp)
+    cmds.namespace(set=nsTmp)
     
     # create base
     cmds.polyCylinder(r = 2, h = cylindHeight)
     
     # move it up
     cmds.move(cylindHeight/2, moveY=True)
-    
-    # add colour      
-    
 
     # step count 
     for i in range(stepCount):
@@ -258,16 +290,180 @@ def spiralStairs():
         cmds.xform( ws = True, rotatePivot = (0, 0, 0))
         # rotate on Y axis
         cmds.rotate(i * 15, rotateY=True)
-
+    
+    # add material        
+    myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
+    cmds.setAttr(nsTmp+":blckMat.color",rgb[0],rgb[1],rgb[2], type='double3')
+    
+    cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False)
+    cmds.delete(ch=True)
+    
+    cmds.hyperShade(assign=(nsTmp+":blckMat"))  
+    cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True)
+    
 #################################################################
 #                   L-SHAPED STAIRS FUNCTION                    #  
 #################################################################
-
+def Lstairs():
+    # query user input values
+    staircaseHeight = cmds.radioButtonGrp('LstairsHeight', q=True, sl=True)
+    rgb = cmds.colorSliderGrp('Lcolour', q=True, rgbValue=True)
+    
+    # define stairs size
+    stairSizeX = 8.0
+    stairSizeY = 1.0
+    stairSizeZ = 2.0
+    
+    if(staircaseHeight == 1):
+        stepCount = 8
+        moveX = 5.039
+        moveY = 6.937
+        moveZ = -19.025
+        rotateY = -90
+        moveFloorX = 0.027
+        moveFloorY = 6.98
+        moveFloorZ = -19.004
+    if(staircaseHeight == 2):
+        stepCount = 10
+        moveX = 5.055
+        moveY = 8.993
+        moveZ = -22.98
+        rotateY = -90
+        moveFloorX = 0.043
+        moveFloorY = 9.036
+        moveFloorZ = -22.959
+    if(staircaseHeight == 3):
+        stepCount = 12
+        moveX = 5.055
+        moveY = 11.002
+        moveZ = -26.907
+        rotateY = -90
+        moveFloorX = 0.064
+        moveFloorY = 11.028
+        moveFloorZ = -26.995
+    
+    # name
+    nsTmp = "LshapedStairs" + str(rnd.randint(1000,9999))
+    
+    cmds.select(clear=True)
+    cmds.namespace(add=nsTmp)
+    cmds.namespace(set=nsTmp)
+    
+    # step count
+    for i in range (stepCount):
+        # create a stair
+        cmds.polyCube(d = stairSizeZ, h = stairSizeY, w = stairSizeX)
+        # move it on Z axis
+        cmds.move(-i*stairSizeZ, moveZ=True)
+        # move it on Y axis
+        cmds.move(i*stairSizeY, moveY=True)
+      
+    # add material        
+    myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
+    cmds.setAttr(nsTmp+":blckMat.color",rgb[0],rgb[1],rgb[2], type='double3')
+    
+    cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False)
+    cmds.delete(ch=True)
+    
+    cmds.hyperShade(assign=(nsTmp+":blckMat"))  
+    cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True)
+    
+    cmds.duplicate(nsTmp)
+    
+    cmds.move(moveX, moveX=True)
+    cmds.move(moveY, moveY=True)
+    cmds.move(moveZ, moveZ=True)
+    cmds.rotate(rotateY, rotateY=True)
+    
+    # create middle floor
+    cmds.polyCube(d = stairSizeX, h = stairSizeY, w = stairSizeX)
+    
+    # move it
+    cmds.move(moveFloorX, moveX=True)
+    cmds.move(moveFloorY, moveY=True)
+    cmds.move(moveFloorZ, moveZ=True)
 
 #################################################################
 #                   U-SHAPED STAIRS FUNCTION                    #  
 #################################################################
-
+def Ustairs():
+    # query user input values
+    staircaseHeight = cmds.radioButtonGrp('UstairsHeight', q=True, sl=True)
+    rgb = cmds.colorSliderGrp('Ucolour', q=True, rgbValue=True)
+    
+    # define stairs size
+    stairSizeX = 8.0
+    stairSizeY = 1.0
+    stairSizeZ = 2.0
+    
+    if(staircaseHeight == 1):
+        stepCount = 8
+        moveX = 5.039
+        moveY = 6.937
+        moveZ = -19.025
+        rotateY = -180
+        moveFloorX = 0.027
+        moveFloorY = 6.98
+        moveFloorZ = -19.004
+    if(staircaseHeight == 2):
+        stepCount = 10
+        moveX = 8.006
+        moveY = 8.993
+        moveZ = -18.036
+        rotateY = -180
+        moveFloorX = 3.833
+        moveFloorY = 9.036
+        moveFloorZ = -22.959
+    if(staircaseHeight == 3):
+        stepCount = 12
+        moveX = 7.989
+        moveY = 11.002
+        moveZ = -21.97
+        rotateY = -180
+        moveFloorX = 3.922
+        moveFloorY = 11.028
+        moveFloorZ = -26.995
+    
+    # name
+    nsTmp = "UshapedStairs" + str(rnd.randint(1000,9999))
+    
+    cmds.select(clear=True)
+    cmds.namespace(add=nsTmp)
+    cmds.namespace(set=nsTmp)
+    
+    # step count
+    for i in range (stepCount):
+        # create a stair
+        cmds.polyCube(d = stairSizeZ, h = stairSizeY, w = stairSizeX)
+        # move it on Z axis
+        cmds.move(-i*stairSizeZ, moveZ=True)
+        # move it on Y axis
+        cmds.move(i*stairSizeY, moveY=True)
+      
+    # add material        
+    myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
+    cmds.setAttr(nsTmp+":blckMat.color",rgb[0],rgb[1],rgb[2], type='double3')
+    
+    cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False)
+    cmds.delete(ch=True)
+    
+    cmds.hyperShade(assign=(nsTmp+":blckMat"))  
+    cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True)
+    
+    cmds.duplicate(nsTmp)
+    
+    cmds.move(moveX, moveX=True)
+    cmds.move(moveY, moveY=True)
+    cmds.move(moveZ, moveZ=True)
+    cmds.rotate(rotateY, rotateY=True)
+    
+    # create middle floor
+    cmds.polyCube(d = stairSizeX, h = stairSizeY, w = stairSizeX*2)
+    
+    # move it
+    cmds.move(moveFloorX, moveX=True)
+    cmds.move(moveFloorY, moveY=True)
+    cmds.move(moveFloorZ, moveZ=True)
 
 #################################################################
 #                  ROMAN TUSCAN COLUMN FUNCTION                 #  
@@ -370,13 +566,14 @@ def walls():
         cmds.move(12, moveX=True)
         # remove door frame from the wall
         wall = cmds.polyCBoolOp(wall, window2, op=2)
+    
+    add2Obj = cmds.polyCube(w = 1, d = 1.5, h = 1)
+    cmds.move(move2obj, moveY=True)
         
     # add material        
     myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
     cmds.setAttr(nsTmp+":blckMat.color",rgb[0],rgb[1],rgb[2], type='double3')
     
-    add2Obj = cmds.polyCube(w = 1, d = 1.5, h = 1)
-    cmds.move(move2obj, moveY=True)
     cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False)
     cmds.delete(ch=True)
     
