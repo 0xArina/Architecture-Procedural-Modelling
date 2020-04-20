@@ -85,6 +85,11 @@ cmds.setParent( '..' )
 cmds.frameLayout(collapsable=True, label="Roman Tuscan column")
 
 cmds.columnLayout()
+cmds.radioButtonGrp('RTcolumnHeight', label="Column Height", labelArray3=["2 m", "2.4 m", "2.8 m"], numberOfRadioButtons=3, sl=2)
+cmds.intSliderGrp('RTcolumnRadius', l="Thickness", f=True, min=1, max=3, value=2)
+cmds.colorSliderGrp('RTcolour', label="Colour", hsv=(120, 0, 0.850))
+
+cmds.columnLayout()
 cmds.button(label="Create Roman Tuscan column", command=('RTcolumn()'))
 
 # Level Up in Hierarchy
@@ -97,6 +102,11 @@ cmds.setParent( '..' )
 cmds.frameLayout(collapsable=True, label="Greek Doric column")
 
 cmds.columnLayout()
+cmds.radioButtonGrp('GDcolumnHeight', label="Column Height", labelArray3=["2 m", "2.4 m", "2.8 m"], numberOfRadioButtons=3, sl=2)
+cmds.intSliderGrp('GDcolumnRadius', l="Thickness", f=True, min=1, max=3, value=2)
+cmds.colorSliderGrp('GDcolour', label="Colour", hsv=(120, 0, 0.850))
+
+cmds.columnLayout()
 cmds.button(label="Create Greek Doric column", command=('GDcolumn()'))
 
 # Level Up in Hierarchy
@@ -107,6 +117,11 @@ cmds.setParent( '..' )
 #          UI: adjust and create Greek Ionic column             #
 #################################################################
 cmds.frameLayout(collapsable=True, label="Greek Ionic column")
+
+cmds.columnLayout()
+cmds.radioButtonGrp('GIcolumnHeight', label="Column Height", labelArray3=["2 m", "2.4 m", "2.8 m"], numberOfRadioButtons=3, sl=2)
+cmds.intSliderGrp('GIcolumnRadius', l="Thickness", f=True, min=1, max=3, value=2)
+cmds.colorSliderGrp('GIcolour', label="Colour", hsv=(120, 0, 0.850))
 
 cmds.columnLayout()
 cmds.button(label="Create Greek Ionic column", command=('GIcolumn()'))
@@ -398,11 +413,11 @@ def Ustairs():
     
     if(staircaseHeight == 1):
         stepCount = 8
-        moveX = 5.039
-        moveY = 6.937
-        moveZ = -19.025
+        moveX = 7.997
+        moveY = 6.999
+        moveZ = -13.983
         rotateY = -180
-        moveFloorX = 0.027
+        moveFloorX = 4.028
         moveFloorY = 6.98
         moveFloorZ = -19.004
     if(staircaseHeight == 2):
@@ -468,18 +483,236 @@ def Ustairs():
 #################################################################
 #                  ROMAN TUSCAN COLUMN FUNCTION                 #  
 #################################################################
-
-
+def RTcolumn():
+    # query user input values
+    columnHeight = cmds.radioButtonGrp('RTcolumnHeight', q=True, sl=True)
+    columnRadius = cmds.intSliderGrp('RTcolumnRadius', q=True, v=True)
+    rgb = cmds.colorSliderGrp('RTcolour', q=True, rgbValue=True)
+    
+    # name
+    nsTmp = "RomanColumn" + str(rnd.randint(1000,9999))
+    
+    cmds.select(clear=True)
+    cmds.namespace(add=nsTmp)
+    cmds.namespace(set=nsTmp)
+    
+    # define variables
+    if(columnHeight == 1):
+        columnSizeY = 16
+        moveY = 9.057 - 2
+        moveY2 = 9.734 - 2
+        moveY3 = 9.98 - 2
+        moveY4 = 9.28 - 2
+    if(columnHeight == 2):
+        columnSizeY = 20
+        moveY = 9.057
+        moveY2 = 9.734
+        moveY3 = 9.98
+        moveY4 = 9.28
+    if(columnHeight == 3):
+        columnSizeY = 24
+        moveY = 9.057 + 2.011
+        moveY2 = 9.734 + 2.011
+        moveY3 = 9.98 + 2.011
+        moveY4 = 9.28 + 2.011
+    
+    if(columnRadius == 1):
+        radius = 0.55
+    if(columnRadius == 2):
+        radius = 0.7 
+    if(columnRadius == 3):
+        radius = 0.85
+    
+    # create base
+    column = cmds.polyCylinder(r=radius, h=columnSizeY)
+    
+    # add decorations
+    upperDecor = cmds.polyCylinder(r=1, h=0.1) 
+    # move it up
+    cmds.move(moveY, moveY=True)
+    # more decorations
+    cmds.polyCylinder(r=1, h=0.4)
+    cmds.move(moveY2, moveY=True)
+    
+    cmds.polyCylinder(r=1.1, h=0.1)
+    cmds.move(moveY3, moveY=True)
+    
+    cmds.polyCylinder(r=0.9, h=0.5)
+    cmds.move(moveY4, moveY=True)
+    
+    # lower part decorations
+    cmds.polyCylinder(r=1, h=0.4) 
+    cmds.move(-moveY3, moveY=True)
+    cmds.polyCylinder(r=0.9, h=0.4)  
+    cmds.move(-moveY2, moveY=True)
+       
+    # add material        
+    myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
+    cmds.setAttr(nsTmp+":blckMat.color",rgb[0],rgb[1],rgb[2], type='double3') 
+    cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False)
+    # move it up
+    cmds.move(columnSizeY/2 + 0.2, moveY=True)
+    cmds.delete(ch=True)
+    
+    cmds.hyperShade(assign=(nsTmp+":blckMat"))  
+    cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True)
+    
 #################################################################
 #                   GREEK DORIC COLUMN FUNCTION                 #  
 #################################################################
-
-
+def GDcolumn():
+    # query user input values
+    columnHeight = cmds.radioButtonGrp('GDcolumnHeight', q=True, sl=True)
+    columnRadius = cmds.intSliderGrp('GDcolumnRadius', q=True, v=True)
+    rgb = cmds.colorSliderGrp('GDcolour', q=True, rgbValue=True)
+    
+    # name
+    nsTmp = "GreekDoricColumn" + str(rnd.randint(1000,9999))
+    
+    cmds.select(clear=True)
+    cmds.namespace(add=nsTmp)
+    cmds.namespace(set=nsTmp)
+    
+    # define variables
+    if(columnHeight == 1):
+        columnSizeY = 16
+        moveY = 9.057 - 2
+        moveY2 = 9.734 - 2
+        moveY3 = 9.98 - 2
+        moveY4 = 9.28 - 2
+    if(columnHeight == 2):
+        columnSizeY = 20
+        moveY = 9.057
+        moveY2 = 9.734
+        moveY3 = 9.98
+        moveY4 = 9.28
+    if(columnHeight == 3):
+        columnSizeY = 24
+        moveY = 9.057 + 2.011
+        moveY2 = 9.734 + 2.011
+        moveY3 = 9.98 + 2.011
+        moveY4 = 9.28 + 2.011
+        
+    if(columnRadius == 1):
+        radius = 0.55
+    if(columnRadius == 2):
+        radius = 0.7 
+    if(columnRadius == 3):
+        radius = 0.85
+        
+    # create base
+    column = cmds.polyCylinder(r=radius, h=columnSizeY, sx=32) 
+    
+    # make it wavy 
+    for i in range(31):
+        if(i % 2 == 0):
+            cmds.select(column[0] + ".f[" + str(i) + "]")
+            cmds.polyExtrudeFacet(ltz=0.1)
+            cmds.polyMoveFacet(lsx=0.5)
+            
+    # add decorations
+    upperDecor = cmds.polyCylinder(r=1, h=0.1) 
+    # move it up
+    cmds.move(moveY, moveY=True)
+    # more decorations
+    cmds.polyCylinder(r=1, h=0.4)
+    cmds.move(moveY2, moveY=True)
+    
+    cmds.polyCylinder(r=1.1, h=0.1)
+    cmds.move(moveY3, moveY=True)
+    
+    cmds.polyCylinder(r=0.9, h=0.5)
+    cmds.move(moveY4, moveY=True)
+   
+    # add material        
+    myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
+    cmds.setAttr(nsTmp+":blckMat.color",rgb[0],rgb[1],rgb[2], type='double3') 
+    cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False)
+    # move it up
+    cmds.move(columnSizeY/2, moveY=True)
+    cmds.delete(ch=True)
+    
+    cmds.hyperShade(assign=(nsTmp+":blckMat"))  
+    cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True)
+   
 #################################################################
 #                  GREEK IONIC COLUMN FUNCTION                  #  
 #################################################################
-
-
+def GIcolumn():
+    # query user input values
+    columnHeight = cmds.radioButtonGrp('GIcolumnHeight', q=True, sl=True)
+    columnRadius = cmds.intSliderGrp('GIcolumnRadius', q=True, v=True)
+    rgb = cmds.colorSliderGrp('GIcolour', q=True, rgbValue=True)
+    
+    # name
+    nsTmp = "GreekIonicColumn" + str(rnd.randint(1000,9999))
+    
+    cmds.select(clear=True)
+    cmds.namespace(add=nsTmp)
+    cmds.namespace(set=nsTmp)
+    
+    # define variables
+    if(columnHeight == 1):
+        columnSizeY = 16
+        moveY2 = 9.734 - 2
+        moveY3 = 9.98 - 2
+    if(columnHeight == 2):
+        columnSizeY = 20
+        moveY2 = 9.734 
+        moveY3 = 9.98 
+    if(columnHeight == 3):
+        columnSizeY = 24
+        moveY2 = 9.734 + 2.011
+        moveY3 = 9.98 + 2.011
+    
+    if(columnRadius == 1):
+        radius = 0.55
+    if(columnRadius == 2):
+        radius = 0.7 
+    if(columnRadius == 3):
+        radius = 0.85
+    
+    # create base
+    column = cmds.polyCylinder(r=radius, h=columnSizeY, sx=32) 
+    
+    # make it wavy 
+    for i in range(31):
+        if(i % 2 == 0):
+            cmds.select(column[0] + ".f[" + str(i) + "]")
+            cmds.polyExtrudeFacet(ltz=0.1)
+            cmds.polyMoveFacet(lsx=0.5)
+            
+    # upper part decorations
+    cmds.polyCylinder(r=0.9, h=0.4) 
+    cmds.move(moveY3, moveY=True)
+    # left
+    cmds.polyCylinder(r=0.4, h=1.4)
+    cmds.rotate(-90, rotateX=True)
+    cmds.move(moveY3 - 0.094 - 0.091, moveY=True)
+    cmds.move(-0.876, moveX=True)
+    #right
+    cmds.polyCylinder(r=0.4, h=1.4)
+    cmds.rotate(-90, rotateX=True)
+    cmds.move(moveY3 - 0.094 - 0.091, moveY=True)
+    cmds.move(0.876, moveX=True)
+    
+    # lower part decorations
+    cmds.polyCylinder(r=1, h=0.4) 
+    cmds.move(-moveY3, moveY=True)
+    cmds.polyCylinder(r=0.9, h=0.4)  
+    cmds.move(-moveY2, moveY=True)
+   
+    # add material        
+    myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
+    cmds.setAttr(nsTmp+":blckMat.color",rgb[0],rgb[1],rgb[2], type='double3') 
+    cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False)
+    # move it up
+    cmds.move(columnSizeY/2, moveY=True)
+    cmds.delete(ch=True)
+    
+    cmds.hyperShade(assign=(nsTmp+":blckMat"))  
+    cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True)
+            
 #################################################################
 #                     WALLS/WINDOWS FUNCTION                    #  
 #################################################################
